@@ -13,18 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def read_excel_data(file_path: str) -> pd.DataFrame:
-    """
-    Читает данные из Excel файла и возвращает их в виде DataFrame.
-
-    Args:
-        file_path (str): Путь к Excel файлу с транзакциями.
-
-    Returns:
-        pd.DataFrame: DataFrame с данными из Excel файла.
-
-    Raises:
-        Exception: Если файл не удалось прочитать или он поврежден.
-    """
+    """Читает данные из Excel файла и возвращает их в виде DataFrame."""
     try:
         df = pd.read_excel(file_path, engine="openpyxl")
         logger.info(f"Успешно прочитан файл {file_path}")
@@ -35,21 +24,14 @@ def read_excel_data(file_path: str) -> pd.DataFrame:
 
 
 def load_user_settings(settings_path: str) -> Dict[str, List[str]]:
-    """
-    Загружает пользовательские настройки из JSON файла.
-
-    Args:
-        settings_path (str): Путь к файлу настроек.
-
-    Returns:
-        Dict[str, List[str]]: Словарь с валютами и акциями.
-    """
+    """Загружает пользовательские настройки из JSON файла."""
     with open(settings_path, "r", encoding="utf-8") as f:
-        data: Dict[str, List[str]] = json.load(f)  # Явно аннотируем тип
+        data: Dict[str, List[str]] = json.load(f)
         return data
 
 
 def get_currency_rates(currencies: List[str]) -> List[Dict[str, Any]]:
+    """Получает курсы валют через API."""
     api_key = os.getenv("API_KEY_CURRENCY")
     url = f"https://api.exchangerate-api.com/v4/latest/RUB?access_key={api_key}"
     try:
@@ -65,10 +47,13 @@ def get_currency_rates(currencies: List[str]) -> List[Dict[str, Any]]:
 
 
 def get_stock_prices(stocks: List[str]) -> List[Dict[str, Any]]:
+    """Получает цены акций через API."""
     api_key = os.getenv("API_KEY_STOCKS")
+    base_url = "https://www.alphavantage.co/query"
+    params = "?function=TIME_SERIES_DAILY&symbol={stock}&apikey={api_key}"
     prices = []
     for stock in stocks:
-        url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={stock}&apikey={api_key}"
+        url = f"{base_url}{params.format(stock=stock, api_key=api_key)}"
         try:
             response = requests.get(url)
             response.raise_for_status()
