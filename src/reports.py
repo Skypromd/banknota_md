@@ -12,15 +12,7 @@ logger = logging.getLogger(__name__)
 def save_report_to_file(
     filename: str = "report.json",
 ) -> Callable[[Callable[..., Dict[str, Any]]], Callable[..., Dict[str, Any]]]:
-    """
-    Декоратор для сохранения результата отчета в JSON файл.
-
-    Args:
-        filename (str): Имя файла для сохранения отчета. По умолчанию "report.json".
-
-    Returns:
-        Callable: Обернутая функция с сохранением результата в файл.
-    """
+    """Декоратор для сохранения результата отчета в JSON файл."""
 
     def decorator(func: Callable[..., Dict[str, Any]]) -> Callable[..., Dict[str, Any]]:
         def wrapper(*args: Any, **kwargs: Any) -> Dict[str, Any]:
@@ -36,22 +28,16 @@ def save_report_to_file(
 
 
 @save_report_to_file(filename="report_spending_by_category.json")
-def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Формирует отчет о тратах по заданной категории за последние 3 месяца.
-
-    Args:
-        transactions (pd.DataFrame): DataFrame с данными о транзакциях.
-        category (str): Название категории для анализа.
-        date (Optional[str]): Дата в формате 'YYYY-MM-DD'. По умолчанию текущая дата.
-
-    Returns:
-        Dict[str, Any]: Словарь с данными отчета (категория, сумма, период).
-    """
+def spending_by_category(
+    transactions: pd.DataFrame, category: str, date: Optional[str] = None
+) -> Dict[str, Any]:
+    """Формирует отчет о тратах по заданной категории за последние 3 месяца."""
     report_date = datetime.now() if not date else datetime.strptime(date, "%Y-%m-%d")
     three_months_ago = report_date - relativedelta(months=3)
 
-    transactions["Дата операции"] = pd.to_datetime(transactions["Дата операции"], format="%d.%m.%Y %H:%M:%S")
+    transactions["Дата операции"] = pd.to_datetime(
+        transactions["Дата операции"], format="%d.%m.%Y %H:%M:%S"
+    )
     filtered = transactions[
         (transactions["Категория"] == category)
         & (transactions["Дата операции"] >= three_months_ago)
@@ -60,7 +46,9 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
     ]
 
     total_spent = abs(filtered["Сумма платежа"].sum())
-    logger.info(f"Рассчитаны траты по категории {category} за период {three_months_ago} - {report_date}")
+    logger.info(
+        f"Рассчитаны траты по категории {category} за период {three_months_ago} - {report_date}"
+    )
 
     return {
         "category": category,

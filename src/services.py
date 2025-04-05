@@ -5,18 +5,10 @@ from typing import Any, Dict, List
 logger = logging.getLogger(__name__)
 
 
-def get_beneficial_cashback_categories(data: List[Dict[str, Any]], year: int, month: int) -> Dict[str, float]:
-    """
-    Анализирует выгодность категорий повышенного кешбэка за указанный месяц.
-
-    Args:
-        data (List[Dict[str, Any]]): Список транзакций.
-        year (int): Год для анализа.
-        month (int): Месяц для анализа.
-
-    Returns:
-        Dict[str, float]: Словарь с категориями и потенциальным кешбэком (1% от суммы).
-    """
+def get_beneficial_cashback_categories(
+    data: List[Dict[str, Any]], year: int, month: int
+) -> Dict[str, float]:
+    """Анализирует выгодность категорий повышенного кешбэка за указанный месяц."""
     cashback_dict: Dict[str, float] = {}
     period = f"{year}-{month:02d}"
 

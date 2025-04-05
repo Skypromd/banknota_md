@@ -1,20 +1,30 @@
 from typing import Any
 from unittest.mock import patch
 
-import pandas as pd  # Подозреваемый импорт
+import pandas as pd
 import pytest
 
-from src.views import home_page
+from src.views import get_greeting, home_page
+
+
+@pytest.mark.parametrize(
+    "date_str, expected_greeting",
+    [
+        ("2021-12-31 08:00:00", "Доброе утро"),
+        ("2021-12-31 14:00:00", "Добрый день"),
+        ("2021-12-31 16:44:00", "Добрый вечер"),
+        ("2021-12-31 01:00:00", "Доброй ночи"),
+    ],
+)
+def test_get_greeting(date_str: str, expected_greeting: str) -> None:
+    """Тестирует функцию get_greeting с параметрами."""
+    result = get_greeting(date_str)
+    assert result == expected_greeting
 
 
 @pytest.fixture
 def mock_data() -> dict[str, list[Any]]:
-    """
-    Фикстура для тестовых данных.
-
-    Returns:
-        dict[str, list[Any]]: Словарь с тестовыми данными для DataFrame.
-    """
+    """Фикстура для тестовых данных."""
     return {
         "Дата операции": ["31.12.2021 16:44:00"],
         "Номер карты": ["1234"],
@@ -30,18 +40,13 @@ def mock_data() -> dict[str, list[Any]]:
 @patch("src.views.get_currency_rates")
 @patch("src.views.get_stock_prices")
 def test_home_page(
-    mock_stocks: Any, mock_rates: Any, mock_settings: Any, mock_read: Any, mock_data: dict[str, list[Any]]
+    mock_stocks: Any,
+    mock_rates: Any,
+    mock_settings: Any,
+    mock_read: Any,
+    mock_data: dict[str, list[Any]],
 ) -> None:
-    """
-    Тестирует функцию home_page.
-
-    Args:
-        mock_stocks: Мок для get_stock_prices.
-        mock_rates: Мок для get_currency_rates.
-        mock_settings: Мок для load_user_settings.
-        mock_read: Мок для read_excel_data.
-        mock_data: Тестовые данные из фикстуры.
-    """
+    """Тестирует функцию home_page."""
     mock_read.return_value = pd.DataFrame(mock_data)
     mock_settings.return_value = {"user_currencies": ["USD"], "user_stocks": ["AAPL"]}
     mock_rates.return_value = [{"currency": "USD", "rate": 75.0}]
