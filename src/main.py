@@ -8,16 +8,15 @@ from src.services import get_beneficial_cashback_categories
 from src.utils import read_excel_data
 from src.views import home_page
 
-
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 
 def main() -> None:
-    """
-    Основная точка входа в приложение, демонстрирует работу всех функций.
-    """
+    """Основная точка входа в приложение, демонстрирует работу всех функций."""
     df = read_excel_data("data/operations.xlsx")
-    transactions: List[Dict[str, Any]] = [{str(k): v for k, v in record.items()} for record in df.to_dict("records")]
+    transactions: List[Dict[str, Any]] = [
+        {str(k): v for k, v in record.items()} for record in df.to_dict("records")
+    ]
 
     home_result = home_page("2021-12-31 16:44:00")
     print("Home Page:")

@@ -16,10 +16,16 @@ def sample_transactions() -> pd.DataFrame:
     return pd.DataFrame(data)
 
 
-def test_spending_by_category(sample_transactions: pd.DataFrame) -> None:
-    """Тестирует функцию spending_by_category."""
-    result = spending_by_category(sample_transactions, "Супермаркеты", "2022-01-01")
+@pytest.mark.parametrize(
+    "category, expected_spent",
+    [("Супермаркеты", 250.0), ("Транспорт", 200.0)],
+)
+def test_spending_by_category(
+    sample_transactions: pd.DataFrame, category: str, expected_spent: float
+) -> None:
+    """Тестирует функцию spending_by_category с параметрами."""
+    result = spending_by_category(sample_transactions, category, "2022-01-01")
     assert isinstance(result, dict)
-    assert result["category"] == "Супермаркеты"
-    assert result["total_spent"] == 250.0
+    assert result["category"] == category
+    assert result["total_spent"] == expected_spent
     assert "period" in result
